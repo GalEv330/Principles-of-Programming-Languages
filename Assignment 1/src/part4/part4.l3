@@ -1,0 +1,74 @@
+#lang racket/base
+
+; Signature: append(l1, l2)
+; Type: [List(T1) * List(T2) -> List(T1, T2)]
+; Purpose: To append two lists together, l1 and l2.
+; Pre-conditions: true
+; Tests: (append '(1 2) '(3 4)) => '(1 2 3 4)
+;        (append '(a) '(4 3)) => '(a 4 3)
+(define append
+    (lambda (l1 l2)
+        (if (eq? l1 '())
+            l2
+            (cons (car l1) (append (cdr l1) l2))
+        )
+))
+
+; Signature: reverse(l)
+; Type:  [List(T) -> List(T)]
+; Purpose: To reverse the order of the elements in a list 'l'.
+; Pre-conditions: true
+; Tests: (reverse '(1 2 3)) => '(3 2 1)
+         (reverse '()) => '()
+(define reverse
+    (lambda (l)
+        (if (eq? l '())
+            l
+            (append (reverse (cdr l)) (cons (car l) '()))
+        )
+))
+
+; Signature: cycle-counts(dup-count)
+; Type:  [List(T) -> List(T)]
+; Purpose: To cycle the elements of list dup-count by moving the first element to the end.
+; Pre-conditions: true
+; Tests: (cycle-counts '(1 2 3)) => '(2 3 1)
+;        (cycle-counts '(a b)) => '(b a)
+(define cycle-counts
+    (lambda (dup-count)
+        (if (eq? dup-count '())
+            dup-count
+            (append (cdr dup-count) (cons (car dup-count) '()))
+	    )
+))
+
+; Signature: duplicate(num, count)
+; Type: [T * Number -> List(T)]
+; Purpose: To create a list with 'count' number of 'num'.
+; Pre-conditions: count >= 0
+; Tests: (duplicate 2 3) => '(2 2 2)
+;        (duplicate 5 0) => '()
+(define duplicate
+    (lambda (num count)
+        (if (= count 0)
+            '()
+            (cons num (duplicate num (- count 1)))
+        )
+))
+
+; Signature: duplicate-items(lst, dup-count)
+; Type:  [List(T) * List(Number) -> List(T)]
+; Purpose: To create a new list where each item in lst is duplicated by the corresponding value in dup-countb.
+; Pre-conditions: dup-count is a non-empty numeric list.
+; Tests: (duplicate-items '(1 2 3) '(1 0)) -> '(1 3)
+;        (duplicate-items '(1 2 3) '(2 1 0 10 2)) -> '(1 1 2)
+(define duplicate-items
+    (lambda (lst dup-count)
+        (if  (eq? lst '())
+            lst
+            (append (duplicate (car lst) (car dup-count))
+                    (duplicate-items (cdr lst) (cycle-counts dup-count))
+            )
+        )
+        
+))
